@@ -38,24 +38,30 @@ String resource="mybatis-config.xml";
 		return null;
 	}
 mapperDao mapperdao=mapper();
-	public boolean Update(Student student) {
+	public int Update(Student student) {
 		// TODO 自动生成的方法存根
 		if(mapperdao!=null) {
 			Student s= mapperdao.GetById(student.getId());
 			s.setName(student.getName());
-			mapperdao.Update(s);
-			return true;
+			int x=mapperdao.Update(s);
+			if(x!=0) {
+				System.out.println("更新成功");
+				return x;
+			}	 
 		}
-		return false;
+		return 0;
 	}
 
-	public boolean Delete(int id) {
+	public int Delete(int id) {
 		// TODO 自动生成的方法存根
 		if(mapperdao!=null) {
-			 mapperdao.Delete(id);
-			return true;
+			 int x=mapperdao.Delete(id);
+			 if(x!=0) {
+					System.out.println("添加成功");
+					return x;
+				}
 		}
-		return false;
+		return 1;
 	}
 
 	public int Insert(Student student) {
@@ -63,7 +69,10 @@ mapperDao mapperdao=mapper();
 		Student s=new Student();
 		s.setId(student.getId());
 		s.setName(student.getName());
-		mapperdao.Insert(s);	
+		int x=mapperdao.Insert(s);	
+		if(x!=0) {
+			System.out.println("添加成功");
+		}
 		return s.getId();
 	}
 

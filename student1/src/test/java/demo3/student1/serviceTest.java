@@ -28,7 +28,7 @@ service s=new service();
 	@Test
 	public void testInsert() {
 		Student s1=new Student();
-		s1.setId(3);
+		s1.setId(4);
 		s1.setName("李四");
 		System.out.println(s.Insert(s1));
 	}

@@ -12,10 +12,10 @@ public interface mapperDao {
 	public List<Student> Show();
 	
 	@Update("update student set name=#{name} where id=#{id}  ")
-	public boolean Update(Student student);
+	public int Update(Student student);
 	
 	@Delete(" delete from student where id= #{id}   ")
-	public boolean Delete(int id);
+	public int Delete(int id);
 	
 	@Insert( "insert into student( id,name,sex,phone,create_at,type,senior ) values (#{id},#{name},#{sex},#{phone},#{create_at},#{type},#{senior})" )
 	public int Insert(Student student);
