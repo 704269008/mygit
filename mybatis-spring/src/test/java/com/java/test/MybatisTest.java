@@ -21,20 +21,29 @@ public class MybatisTest {
 	@Test
 	public void testAdd() {
 		Category category = new Category();
-		category.setId(4);
-		category.setName("Category 4");
-		categoryMapper.add(category);
+		category.setId(5);
+		category.setName("Category 5");
+		int x=categoryMapper.add(category);
+		if(x!=0) {
+			System.out.println("添加成功");
+		}
 	}
 	@Test
 	public void testUpdate() {
 		Category category = new Category();
 		category.setId(3);
 		category.setName("Category 4");
-		categoryMapper.update(category);
+		int x=categoryMapper.update(category);
+		if(x!=0) {
+			System.out.println("更新成功");
+		}
 	}
 	@Test
 	public void testDelete() {
-	categoryMapper.delete(3);
+	int x=categoryMapper.delete(3);
+	if(x!=0) {
+		System.out.println("删除成功");
+	}
 	}
 	@Test
 	public void testGet() {

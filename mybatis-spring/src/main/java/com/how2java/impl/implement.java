@@ -15,20 +15,27 @@ public class implement {
 		// TODO 自动生成的方法存根
 		Category category=new Category();
    //add(category);//添加数据
-   //update(category);//修改数据
+	//update(category);//修改数据
     //delete();//删除数据
     //getId();//id搜索数据
-    show();//搜索所有数据
+   show();//搜索所有数据
 	}
 	private static void update(Category category) {
 		// TODO 自动生成的方法存根
 		category.setId(4);
-		category.setName("category4");
-		categoryMapper.update(category);
+		category.setName("category 4");
+		int x=categoryMapper.update(category);
+		if(x!=0) {
+			System.out.println("更新成功");
+		}
+		
 	}
 	private static void delete() {
 		// TODO 自动生成的方法存根
-		categoryMapper.delete(4);
+		int x=categoryMapper.delete(4);
+		if(x!=0) {
+			System.out.println("删除成功");
+		}
 	}
 	private static void getId() {
 		// TODO 自动生成的方法存根
@@ -43,9 +50,12 @@ public class implement {
 	}
 	private static void add(Category category) {
 		// TODO 自动生成的方法存根
-		category.setId(4);
-		category.setName("Category 4");
-		categoryMapper.add(category);
+		category.setId(3);
+		category.setName("Category 3");
+		int x=categoryMapper.add(category);
+		if(x!=0) {
+			System.out.println("添加成功");
+		}
 	}
 
 }
