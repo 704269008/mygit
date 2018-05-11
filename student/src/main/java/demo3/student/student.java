@@ -31,7 +31,7 @@ Show();//搜索该数据库表中所有信息
 	private static void update() {
 		// TODO 自动生成的方法存根
 		Student s1=new Student();
-		s1.setId(2);
+		s1.setId(3);
 		s1.setName("王五");
 		log.info(service.Update(s1));
 	}
@@ -40,7 +40,7 @@ Show();//搜索该数据库表中所有信息
 		// TODO 自动生成的方法存根
 		Student s1=new Student();
 		s1.setId(3);
-		s1.setName("李四");
+		s1.setName("李三");
 		log.info(service.Insert(s1));
 	}
 

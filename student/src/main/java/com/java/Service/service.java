@@ -45,9 +45,12 @@ String resource="mybatis-config.xml";
 		if(session!=null) {
 			Student s= session.selectOne("getStudent",student.getId());
 			s.setName(student.getName());
-			session.update("updateStudent", s);
+			int x=session.update("updateStudent", s);
 			session.commit();
 			session.close();
+			if(x!=0) {
+				System.out.println("更新成功");
+			}
 			return true;
 		}
 		return false;
@@ -58,9 +61,12 @@ String resource="mybatis-config.xml";
 		SqlSession session=sqlsession();
 		if(session!=null) {
 			Student s= session.selectOne("getStudent",id);
-			session.delete("deleteStudent", s);
+			int x=session.delete("deleteStudent", s);
 			session.commit();
 			session.close();
+			if(x!=0) {
+				System.out.println("删除成功");
+			}
 			return true;
 		}
 		return false;
@@ -72,9 +78,12 @@ String resource="mybatis-config.xml";
 		Student s=new Student();
 		s.setId(student.getId());
 		s.setName(student.getName());
-		session.insert("addStudent", s);
+		int x=session.insert("addStudent", s);
 		session.commit();
 		session.close();
+		if(x!=0) {
+			System.out.println("添加成功");
+		}
 		return s.getId();
 	}
 
