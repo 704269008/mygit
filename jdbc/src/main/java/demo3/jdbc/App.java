@@ -22,11 +22,11 @@ public class App
 			System.out.println("成功加载MySql驱动");
 			conn=DriverManager.getConnection("jdbc:mysql://www.king.com:3306/data?characterEncoding=UTF-8&useSSL=false", "root", "225510zZ@");
 			stmt=conn.createStatement();
-			add(stmt);//添加
-			delete(stmt);//删除
-			update(stmt);//修改
+			//add(stmt);//添加
+			//delete(stmt);//删除
+			//update(stmt);//修改
 			select(stmt,rs);//查询所有
-			getid(stmt,rs);//通过id查询
+			//getid(stmt,rs);//通过id查询
 		conn.close();
 		}catch(SQLException e) {
 				System.out.println("mysql操作错误");
@@ -87,9 +87,12 @@ public class App
 
 	private static void update(Statement stmt) {
 		// TODO 自动生成的方法存根
-		String sql= "update student1 set name='历史' where id=1";
+		String sql= "update student1 set name='历史了' where id=1";
 		try {
-			stmt.execute(sql);
+			int x=stmt.executeUpdate(sql);
+			if(x!=0) {
+				System.out.println("更新成功");
+			}
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -100,7 +103,10 @@ public class App
 		// TODO 自动生成的方法存根
 		String sql= "delete from student1 where id=1";
 		try {
-			stmt.execute(sql);
+			int x=stmt.executeUpdate(sql);
+			if(x!=0) {
+				System.out.println("删除成功");
+			}
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -111,7 +117,10 @@ public class App
 		// TODO 自动生成的方法存根
 		String sql= "insert into student1 values("+1+","+"'老子'"+","+"'男'"+")";
 		try {
-			stmt.execute(sql);
+			int x=stmt.executeUpdate(sql);
+			if(x!=0) {
+				System.out.println("添加成功");
+			}
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
