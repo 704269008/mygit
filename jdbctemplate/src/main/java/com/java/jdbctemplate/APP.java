@@ -30,13 +30,19 @@ log.info("total time:"+time);
 	private static void update() {
 		// TODO 自动生成的方法存根
 		String sql="update Category set name=? where id=?";
-		 Object args[] = {"updatecategory",2};  
-        jdbcTemplate.update(sql, args); 
+		 Object args[] = {"updatecategory",2}; 
+        int x=jdbcTemplate.update(sql, args); 
+        if(x!=0) {
+        	System.out.println("更新成功");
+        }
 	}
 
 	private static void delete() {
 		// TODO 自动生成的方法存根
-		 jdbcTemplate.update("delete from Category where id=?", new Object[]{2});
+		 int x=jdbcTemplate.update("delete from Category where id=?", new Object[]{2});
+		  if(x!=0) {
+	        	System.out.println("删除成功");
+	        }
 	}
 
 	private static void getById() {
@@ -59,7 +65,10 @@ log.info("total time:"+time);
 		// TODO 自动生成的方法存根
 		String sql = "insert into Category values(?,?)";  
 		Object args1[] = {2,"category2"};  
-		jdbcTemplate.update(sql, args1);
+		int x=jdbcTemplate.update(sql, args1);
+		  if(x!=0) {
+	        	System.out.println("添加成功");
+	        }
 	}
 
 }

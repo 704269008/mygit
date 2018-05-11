@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
+import com.java.dao.JdbcTemplateDao;
 import com.java.pojo.Category;
 
 public class DaoTest {
@@ -19,9 +20,8 @@ Log log=LogFactory.getLog(this.getClass());
 
 	@Test
 	public void testUpdate() {
-		
 		Category c=new Category();
-	c.setId(6);
+	c.setId(2);
 	c.setName("category 6");
 		jdbctemplate.Update(c);
 	}
