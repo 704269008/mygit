@@ -1,7 +1,7 @@
 //package ssm1;
 //
-//import com.java.mapper.StudentMapper;
-//import com.java.pojo.Student;
+//import com.jns.mapper.StudentMapper;
+//import com.jns.pojo.Student;
 //import org.junit.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.test.context.ContextConfiguration;
