@@ -14,17 +14,13 @@
    
     <context:annotation-config/>
     <context:component-scan base-package="com.jns.service"/>
-
-    <!-- 引入配置文件 -->
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>classpath:cache.properties</value>
-            </list>
-        </property>
+    <context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true" />
+<bean id="cos" class="com.jns.entity.Cos">
+</bean>
+    <bean id="oss" class="com.jns.entity.Oss">
     </bean>
-
+    <bean id="default" class="com.jns.entity.Default">
+    </bean>
     <!--数据库连接池-->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<!-- 基本属性 url、user、password -->

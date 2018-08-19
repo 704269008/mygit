@@ -1,30 +1,29 @@
 package com.jns.utils;
 
+import com.jns.entity.Cos;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-
 public class CosDemo {
-    Logger logger= LoggerFactory.getLogger(CosDemo.class);
-    static String bucketName="does-1257257036";//存储桶名称
-    static String secretId="AKIDb5OXVIZOvIUVM2Mt691hEbnpgrrgbrCM";//腾讯云API秘钥ID
-    static String secretKey="64sVwCMLArJeomZAaotqdFfub9VfeS5h";//腾讯云API秘钥值
-    static String region="ap-chengdu";//所属地域
-    static String appId="1257257036";//APPID
-    static String folder="imgage/";//存储imgage文件夹下
-
-
+    static ApplicationContext applicationContext=new ClassPathXmlApplicationContext("applicationContext.xml");
+    static Cos cos= (Cos) applicationContext.getBean("cos");
+    static String bucketName=cos.getBucketName();//存储桶名称
+    static String secretId=cos.getSecretId();//腾讯云API秘钥ID
+    static String secretKey=cos.getSecretKey();//腾讯云API秘钥值
+    static String region=cos.getRegion();//所属地域
+    static String appId=cos.getAppId();//APPID
+    static String folder=cos.getFolder();//存储imgage文件夹下
     //初始化客户端cosclient
     public  static COSClient getCosClient(){
 
@@ -67,8 +66,7 @@ public class CosDemo {
 
 
     //获取bucketName列表文件
-    public static ObjectListing getFileList(){
-        COSClient cosClient=getCosClient();
+    public static ObjectListing getFileList(COSClient cosClient){
         String nextMarker = null;
         //获取bucket下成员
         ListObjectsRequest listObjectsRequest=new ListObjectsRequest();
@@ -100,9 +98,9 @@ public class CosDemo {
 
 
     //获取列表文件中的各个key，即各个文件路径集合
-    public static List<String> getKey(){
+    public static List<String> getKey(COSClient cosClient){
         //所有列表
-        ObjectListing objectListing=getFileList();
+        ObjectListing objectListing=getFileList(cosClient);
         //列表中相对应的bucket下的文件
         List<COSObjectSummary> objectSummaries=objectListing.getObjectSummaries();
         List<String> keys=new ArrayList<>();
@@ -132,8 +130,7 @@ public class CosDemo {
 
 
     //上传文件流
-    public static String updInputStream(InputStream inputStream, String fileName) throws FileNotFoundException {
-        COSClient cosClient = getCosClient();
+    public static String updInputStream(COSClient cosClient,InputStream inputStream, String fileName) throws FileNotFoundException {
         // 上传文件流。
         PutObjectResult result = cosClient.putObject(bucketName, fileName, inputStream,null);
         String MD5Key = result.getETag();
@@ -169,18 +166,36 @@ public class CosDemo {
 
     //获取图片的格式类型
     public static String getcontentType(String fileName) {
-        String filenameExtension = fileName.substring(fileName.lastIndexOf("."));
+        String fileExtension = fileName.substring(fileName.lastIndexOf("."));
         System.out.println();
-        if (filenameExtension.equalsIgnoreCase("bmp")) {
+        if(".bmp".equalsIgnoreCase(fileExtension)) {
             return "image/bmp";
         }
-        if (filenameExtension.equalsIgnoreCase("gif")) {
+        if(".gif".equalsIgnoreCase(fileExtension)) {
             return "image/gif";
         }
-        if (filenameExtension.equalsIgnoreCase("jpeg") || filenameExtension.equalsIgnoreCase("jpg")
-                || filenameExtension.equalsIgnoreCase("png")) {
+        if(".jpeg".equalsIgnoreCase(fileExtension) || ".jpg".equalsIgnoreCase(fileExtension)  || ".png".equalsIgnoreCase(fileExtension) ) {
             return "image/jpeg";
         }
+        if(".html".equalsIgnoreCase(fileExtension)) {
+            return "text/html";
+        }
+        if(".txt".equalsIgnoreCase(fileExtension)) {
+            return "text/plain";
+        }
+        if(".vsd".equalsIgnoreCase(fileExtension)) {
+            return "application/vnd.visio";
+        }
+        if(".ppt".equalsIgnoreCase(fileExtension) || "pptx".equalsIgnoreCase(fileExtension)) {
+            return "application/vnd.ms-powerpoint";
+        }
+        if(".doc".equalsIgnoreCase(fileExtension) || "docx".equalsIgnoreCase(fileExtension)) {
+            return "application/msword";
+        }
+        if(".xml".equalsIgnoreCase(fileExtension)) {
+            return "text/xml";
+        }
+        //默认返回类型
         return "image/jpeg";
     }
 

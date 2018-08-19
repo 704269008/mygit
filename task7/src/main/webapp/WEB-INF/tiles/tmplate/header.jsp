@@ -6,6 +6,12 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<style>
+    .to{width: 50px;height: 50px;border-radius: 100px}
+</style>
+<style>
+
+</style>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -21,8 +27,9 @@
 <header>
     <% String name= (String) session.getAttribute("name");
     if(name!=null){%>
-    <a href="/logout" style="color:blue;float: right" >注销</a>
-    <a href="/personal" style="color:blue;float: right" ><%=request.getSession().getAttribute("name")%>  </a><%}else{%>
+    <a href="/logout" style="color:blue;float: right" >  注销</a>
+    <a href="/personal" style="color:blue;float: right" ><%=request.getSession().getAttribute("name")%>  </a>
+    <a href="/personal" style="float: right" class="to"><img  alt="" class="to" src="<%=request.getSession().getAttribute("img")%>"></a><%}else{%>
     <a href="/register" style="color:blue;float: right" >注册</a>
     <a href="/login" style="color:blue;float: right" >登录</a><%}
 %>
@@ -62,13 +69,13 @@
                     <li>
                         <a href="/home">首页</a>
                     </li>
-                    <li class="active">
+                    <li>
                         <a href="/job">职业</a>
                     </li>
-                    <li>
+                    <li >
                         <a href="/offer">推荐</a>
                     </li>
-                    <li>
+                    <li >
                         <a href=/u/students>学生信息管理</a>
                     </li>
                     <li>

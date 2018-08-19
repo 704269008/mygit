@@ -126,9 +126,9 @@
         <c:if test="${sessionScope.email eq null}">
        账号: <input  type="text" name="phone" id="sign"   value="手机号/邮箱"
         <%-- 光标选中 如果是默认字符串 不显示内容 --%>
-               onfocus="if (this.value == '手机号/邮箱') {this.value = '';this.style.color='#999'}"
+               onfocus="if (this.value == '手机号/邮箱') {this.value = '';}"
         <%-- 失去焦点 value为空 显示内容 --%>
-               onblur="if (this.value == '') {this.value = '手机号/邮箱';this.style.color='#000'}">
+               onblur="if (this.value == '') {this.value = '手机号/邮箱';}">
             <label id="label" style="color: red;display: none" >*</label>
         </c:if>
         <br/>

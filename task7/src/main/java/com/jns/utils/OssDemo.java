@@ -2,6 +2,9 @@ package com.jns.utils;
 
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.*;
+import com.jns.entity.Oss;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,11 +13,13 @@ import java.net.URL;
 import java.util.*;
 
 public class OssDemo {
-    static String endpoint = "oss-cn-beijing.aliyuncs.com";//访问地域
-    static String accessKeyId = "LTAItaEKs6pPjtEE";//访问秘钥id
-    static String accessKeySecret = "ZZlnAVjyPg4JHS0cu7P5rFmW67WcLy";//访问秘钥值
-    static String folder="imgage/";   //存在imgage文件夹下
-    static String bucketName="does";  //存储空间
+    static ApplicationContext applicationContext=new ClassPathXmlApplicationContext("applicationContext.xml");
+    static Oss oss= (Oss) applicationContext.getBean("oss");
+    static String endpoint =oss.getEndpoint();//访问地域
+    static String accessKeyId = oss.getAccessKeyId();//访问秘钥id
+    static String accessKeySecret = oss.getAccessKeySecret();//访问秘钥值
+    static String folder=oss.getFolder();   //存在imgage文件夹下
+    static String bucketName=oss.getBucketName();  //存储空间
 
 
     //oss初始化
@@ -25,8 +30,7 @@ public class OssDemo {
 
 
     //直接就图片上传至第三方,用来进行单一测试
-    public void upload(String bucketName,String key,File file){
-        OSSClient ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
+    public void upload(OSSClient ossClient,String bucketName,String key,File file){
         // 上传文件。由本地文件路径加文件名包括后缀组成，例如/users/local/myfile.txt。
         ossClient.putObject(bucketName,key,file);
         closeOosClient(ossClient);
@@ -40,13 +44,10 @@ public class OssDemo {
 
 
     //上传文件流
-    public static String updInputStream(InputStream inputStream,String fileName) throws FileNotFoundException {
-        OSSClient ossClient = getOssClient();
+    public static String updInputStream(OSSClient ossClient,InputStream inputStream,String fileName) throws FileNotFoundException {
         // 上传文件流。
         PutObjectResult result = ossClient.putObject(bucketName, fileName, inputStream);
         String MD5Key = result.getETag();
-        // 关闭OSSClient。
-        ossClient.shutdown();
         return MD5Key;
     }
 
@@ -82,17 +83,35 @@ public class OssDemo {
 
     //获取图片的格式类型
     public static String getcontentType(String fileName) {
-        String filenameExtension = fileName.substring(fileName.lastIndexOf("."));
-        if (filenameExtension.equalsIgnoreCase("bmp")) {
+        String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+        if(".bmp".equalsIgnoreCase(fileExtension)) {
             return "image/bmp";
         }
-        if (filenameExtension.equalsIgnoreCase("gif")) {
+        if(".gif".equalsIgnoreCase(fileExtension)) {
             return "image/gif";
         }
-        if (filenameExtension.equalsIgnoreCase("jpeg") || filenameExtension.equalsIgnoreCase("jpg")
-                || filenameExtension.equalsIgnoreCase("png")) {
+        if(".jpeg".equalsIgnoreCase(fileExtension) || ".jpg".equalsIgnoreCase(fileExtension)  || ".png".equalsIgnoreCase(fileExtension) ) {
             return "image/jpeg";
         }
+        if(".html".equalsIgnoreCase(fileExtension)) {
+            return "text/html";
+        }
+        if(".txt".equalsIgnoreCase(fileExtension)) {
+            return "text/plain";
+        }
+        if(".vsd".equalsIgnoreCase(fileExtension)) {
+            return "application/vnd.visio";
+        }
+        if(".ppt".equalsIgnoreCase(fileExtension) || "pptx".equalsIgnoreCase(fileExtension)) {
+            return "application/vnd.ms-powerpoint";
+        }
+        if(".doc".equalsIgnoreCase(fileExtension) || "docx".equalsIgnoreCase(fileExtension)) {
+            return "application/msword";
+        }
+        if(".xml".equalsIgnoreCase(fileExtension)) {
+            return "text/xml";
+        }
+        //默认返回类型
         return "image/jpeg";
     }
 
@@ -120,7 +139,7 @@ public class OssDemo {
             map.put("key",folder+fileName);
         } catch (IOException e) {
             System.out.println("上传异常");
-        }finally{}
+        }
         return map;
     }
 
@@ -140,8 +159,7 @@ public class OssDemo {
 
 
     //获取bucketName所有文件
-    public static ObjectListing getFileList(){
-        OSSClient ossClient =getOssClient();
+    public static ObjectListing getFileList(OSSClient ossClient){
         //获取bucket下成员
         ListObjectsRequest listObjectsRequest=new ListObjectsRequest();
         listObjectsRequest.setBucketName(bucketName);
@@ -170,8 +188,8 @@ public class OssDemo {
 
 
     //获取列表文件中的key集合，即路径集合
-    public static List<String> getKey(){
-        ObjectListing objectListing=getFileList();
+    public static List<String> getKey(OSSClient ossClient){
+        ObjectListing objectListing=getFileList(ossClient);
         List<OSSObjectSummary> objectSummaries=objectListing.getObjectSummaries();
         List<String> keys=new ArrayList<>();
         for(OSSObjectSummary ossObjectSummary:objectSummaries){

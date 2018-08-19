@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -32,7 +34,9 @@ public class JnsController {
     //指定请求的实际地址，请求的method类型
     //首页
     @RequestMapping(value = "/home",method = RequestMethod.GET)
-    public ModelAndView Home() throws UnsupportedEncodingException {
+    public ModelAndView Home(HttpServletRequest request) throws UnsupportedEncodingException {
+        HttpSession session=request.getSession();
+        System.out.println("session值"+session.getAttribute("name"));
         modelAndView.setViewName("home");
         return modelAndView;
     }

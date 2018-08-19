@@ -1,6 +1,7 @@
 package com.jns.controller;
 
 import com.aliyun.oss.OSSClient;
+import com.jns.entity.Default;
 import com.jns.entity.Users;
 import com.jns.service.UsersService;
 import com.jns.utils.*;
@@ -8,6 +9,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +27,6 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Random;
@@ -34,7 +36,8 @@ import java.util.regex.Pattern;
 @Controller
 @RequestMapping("")
 public class UserController {
-
+    static  ApplicationContext  applicationContext=new ClassPathXmlApplicationContext("applicationContext.xml");
+    static Default aDefault=(Default) applicationContext.getBean("default");
     public int count=0;
     //借助slf4j记录日志
     Logger logger= LoggerFactory.getLogger(UserController.class);
@@ -61,19 +64,16 @@ public class UserController {
     //登录以及是否需要验证码登录
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ModelAndView login(String number,Users users, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Cookie[] cookies=request.getCookies();
+        HttpSession session=request.getSession();
+        String code=(String) session.getAttribute("code");
         request.getSession().setAttribute("email", users.getPhone());
         if(number!=null){
-            for(Cookie cookie:cookies) {
-                if (cookie.getName().equals("code")) {
-                    if (cookie.getValue().equals(number)) {
+                    if (code.equals(number)) {
                         request.getSession().setAttribute("email", null);
                         return loginCheck(users, response,request);
                     } else {
                             JOptionPane.showMessageDialog(null, "验证码错误");
                     }
-                }
-            }
             return new ModelAndView("redirect:/login");
         }
         return loginCheck(users,response,request);
@@ -107,11 +107,9 @@ public class UserController {
                 // DESUtil加密
                 byte[] bytes = DESUtil.encrypt(token, key);
                 //调用方法来管理cookie
-                if(userAuth1.getName()!=null){
-                    session.setAttribute("name",userAuth1.getName());
-                }else{
-                    session.setAttribute("name",userAuth1.getPhone());
-                }
+                session.setAttribute("name",userAuth1.getName());
+                session.setAttribute("phone",userAuth1.getPhone());
+                session.setAttribute("img",userAuth1.getImg());
                 // 使用  org.apache.commons.codec.binary.Base64;
                 //把加密后的token放入cookie中，以便储存登录状态
                 String value=Base64.encodeBase64String(bytes);
@@ -123,7 +121,7 @@ public class UserController {
                 loginCookie("JSESSIONID",session.getId(),6000,response);
                 //重定向，跳转到首页home
                 //cookie存储验证码
-                managerCookie("code", null, 0, response);
+                request.getSession().setAttribute("code",null);
                 return new ModelAndView("redirect:/home");
             } else {
                 count += 1;
@@ -167,7 +165,6 @@ public class UserController {
     //检测账号是否存在
     @RequestMapping(value = "/check")
     public void checkRegister(HttpServletRequest request) throws IOException {
-
         String phone=request.getParameter("phoneOrEmail1");
         Users users=usersService.getByPhone(phone);
         if(users!=null){
@@ -179,10 +176,12 @@ public class UserController {
     //注册以及判断用户phone重复
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ModelAndView register(Users users,String number,HttpServletRequest request) throws IOException{
-        Cookie[] cookies=request.getCookies();
-        for(Cookie cookie:cookies) {
-            if (cookie.getName().equals("code")) {
-                if (cookie.getValue().equals(number)) {
+        HttpSession session=request.getSession();
+        String code=(String) session.getAttribute("code");
+        System.out.println("code"+code);
+        System.out.println("number"+number);
+                if (code.equals(number)) {
+                    System.out.println("jkjlkjl");
                     //防止空指针
                     if (users != null) {
                         //新创建一个用户对象，设置它的注册时间。
@@ -190,6 +189,9 @@ public class UserController {
                         u.setPassword(users.getPassword());
                         u.setPhone(users.getPhone());
                         u.setCreate_at(users.getCreate_at());
+                        u.setImg(aDefault.getUrl());
+                        u.setSign(aDefault.getSign());
+                        u.setName(aDefault.getName());
                         //判断注册的phone是否重复。
                         Users user = usersService.getByPhone(users.getPhone());
                         if (user == null) {
@@ -209,8 +211,6 @@ public class UserController {
                         JOptionPane.showMessageDialog(null, "验证码错误");
                     }
                 }
-            }
-        }
         //若用户的phone存在，请换一个phone再注册
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("register");
@@ -226,6 +226,7 @@ public class UserController {
         managerCookie("token", null,0,response);
         request.getSession().setAttribute("token",null);
         request.getSession().setAttribute("name",null);
+        request.getSession().setAttribute("phone",null);
         //返回首页
         return  new ModelAndView("redirect:/home");
     }
@@ -236,12 +237,9 @@ public class UserController {
     public String toPersonal(Model model,HttpServletRequest request) throws UnsupportedEncodingException {
            HttpSession session=request.getSession();
            String name= (String) session.getAttribute("name");
+           String phone=(String) session.getAttribute("phone");
         if(name!=null) {
-            Users users = usersService.getByName(URLDecoder.decode(name, "utf-8"));
-            if (users == null) {
-                logger.info("phone" + URLDecoder.decode(name, "utf-8"));
-                users = usersService.getByPhone(URLDecoder.decode(name, "utf-8"));
-            }
+            Users users = usersService.getByPhone(phone);
             model.addAttribute("c", users);
             return "personal";
         }
@@ -270,10 +268,11 @@ public class UserController {
             //清楚服务器存放的图片。
             file.delete();
             usersService.update(users);
+            request.getSession().setAttribute("img",users.getImg());
         }else {
             usersService.updateOther(users);
         }
-        request.getSession().setAttribute("img",users.getImg());
+
         request.getSession().setAttribute("name",users.getName());
         return new ModelAndView("redirect:/home");
     }
@@ -288,15 +287,7 @@ public class UserController {
         }else{
         phone=request.getParameter("phoneOrEmail");
         }
-        Cookie[] cookies=request.getCookies();
-        for(Cookie cookie:cookies){
-            if(cookie.getName().equals("code"))
-                try {
-                    managerCookie("code",null,0,response);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-        }
+        request.getSession().setAttribute("code",null);
         Pattern pattern = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
         Matcher matcher = pattern.matcher(phone);
         //随机码
@@ -321,10 +312,9 @@ public class UserController {
                 e.printStackTrace();
             }
         }
-        try {
-            managerCookie("code",code,60,response);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        HttpSession session=request.getSession();
+        session.setAttribute("code",code);
+        System.out.println("codef"+session.getAttribute("code"));
+        session.setMaxInactiveInterval(60);
     }
 }
