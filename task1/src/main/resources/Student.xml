@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//jdbc.mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jdbc.mapper.StudentMapper">
+    <!--动态sql练习-->
+    <!--使用when otherwise标签达到if else效果-->
+    <select id="listStudentByName" parameterType="map" resultType="Student">
+        select * from   student
+        <where>
+            <choose>
+            <when test="id!=null">and id =3</when>
+            <when test="name!=null">and name like concat('%',#{name},'%')</when>
+            <otherwise>and id = 8</otherwise>
+            </choose>
+        </where>
+    </select>
+    <!--参数类型map，存放id，name。模糊查询练习-->
+    <select id="listStudentByIdAndName"  parameterType="map" resultType="Student">
+        select * from   student  where id> #{id}  and name like concat('%',#{name},'%')
+    </select>
+    <select id="list" resultType="Student">
+        select * from student limit 0,5
+    </select>
+</mapper>
