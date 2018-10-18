@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jns.mapper.RoleMapper">
+    <resultMap id="role" type="Role">
+        <id property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+    </resultMap>
+    <insert id="addRole" parameterType="Role">
+     INSERT INTO sys_role(role_name,available) VALUES (#{roleName},#{available})
+    </insert>
+    <delete id="deleteRole" parameterType="int">
+        DELETE FROM sys_role WHERE role_id=#{roleId}
+    </delete>
+    <select id="findById" parameterType="int" resultMap="role">
+        SELECT * FROM sys_role WHERE role_id=#{roleId}
+    </select>
+    <select id="findRolesByUserName" parameterType="Role" resultMap="role">
+        SELECT r.* FROM sys_role r,sys_user u,sys_user_role ur WHERE u.user_name=#{userName} AND u.user_id =ur.user_id AND r.role_id=ur.role_id
+    </select>
+    <select id="findAllRoles" resultMap="role">
+        SELECT * FROM sys_role
+    </select>
+    <update id="updateRole" parameterType="Role">
+        UPDATE sys_role SET role_name=#{roleName},available=#{available} WHERE role_id=#{roleId}
+    </update>
+    <delete id="deleteUserRole" parameterType="int">
+        DELETE FROM sys_user_role WHERE role_id=#{role_id}
+    </delete>
+    <delete id="deleteRolePermission" parameterType="int">
+        DELETE FROM sys_role_permission WHERE role_id=#{roleId}
+    </delete>
+    <insert id="addRolePermission" parameterType="RolePermission">
+        ;insert into sys_role_permission (role_id,permission_id) values (#{roleId},#{permissionId});
+    </insert>
+</mapper>

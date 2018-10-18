@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jns.mapper.UserMapper">
+     <resultMap id="user" type="User">
+         <id property="userId" column="user_id"/>
+         <result property="userCode" column="user_code"/>
+         <result property="userName" column="user_name"/>
+         <result property="userPassword" column="user_password"/>
+     </resultMap>
+    <insert id="addUser" parameterType="User">
+        insert into sys_user(user_name,user_password,salt) values(#{userName},#{userPassword},#{salt})
+    </insert>
+    <delete id="deleteUser" parameterType="int">
+        delete from sys_user where user_id=#{userId}
+    </delete>
+    <select id="findUserByUserName" parameterType="String" resultMap="user">
+        SELECT * FROM  sys_user WHERE user_name=#{userName}
+    </select>
+    <select id="findAllUsers" resultMap="user">
+        SELECT * FROM sys_user
+    </select>
+    <delete id="deleteUserRole" parameterType="int">
+        DELETE FROM sys_user_role WHERE user_id=#{userId}
+    </delete>
+    <insert id="addUserRole" parameterType="UserRole">
+        insert into sys_user_role (user_id,role_id) values (#{userId},#{roleId})
+    </insert>
+
+
+    <!--根据名字查询相应的角色名-->
+    <select id="findRoles" parameterType="string" resultType="string">
+        SELECT r.role_name FROM  sys_user u,sys_role r,sys_user_role ur WHERE u.user_name=#{userName}
+        AND u.user_id=ur.user_id AND r.role_id=ur.role_id
+    </select>
+
+
+    <!--根据名字查询相应权限名称-->
+    <select id="findPermissionsByUserName" parameterType="string" resultType="string">
+        SELECT p.resource_name FROM sys_user u,sys_role r,sys_user_role ur,sys_permission p,sys_role_permission rp
+        WHERE u.user_name=#{userName} AND u.user_id=ur.user_id AND r.role_id=ur.role_id AND r.role_id=rp.role_id AND rp.permission_id=p.permission_id
+    </select>
+
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jns.mapper.PermissionMapper">
+    <resultMap id="permission" type="Permission">
+        <id property="resourceId" column="resource_id"/>
+        <result property="resourceName" column="resource_name"/>
+        <result property="resourceType" column="resource_type"/>
+        <result property="resourceUrl" column="resource_url"/>
+        <result property="resourcePercode" column="resource_percode"/>
+        <result property="resourceParentid" column="resource_parentid"/>
+    </resultMap>
+    <insert id="addPermission" parameterType="Permission">
+        insert into sys_permission (resource_name,resource_type,resource_url,resource_percode)
+        values (#{resourceName},#{resourceType},#{resourceUrl},#{resourcePercode})
+    </insert>
+    <delete id="deletePermission" parameterType="long">
+        DELETE FROM sys_permission WHERE resource_id=#{permissionId}
+    </delete>
+    <select id="findById" parameterType="long" resultMap="permission">
+        select * from sys_permission WHERE resource_id=#{permissionId}
+    </select>
+    <select id="findPermissionsByUserName" parameterType="String" resultMap="permission">
+        select p.* from sys_user u
+                left join sys_user_role ru
+                    on u.user_id = ru.user_id left
+                join sys_role r
+                    on r.role_id = ru.role_id
+                left join sys_role_permission rp
+                    on r.role_id = rp.role_id
+                left join sys_permission p
+                    on p.resource_id = rp.permission_id
+            where u.user_name =#{userName}
+    </select>
+    <!--根据角色id查看所有权限-->
+    <select id="findPermissionsByRoleId" parameterType="int" resultMap="permission">
+        select p.* from sys_role_permission rp,sys_permission p WHERE rp.role_id=#{roleId} AND rp.permission_id=p.resource_id
+    </select>
+    <select id="findAllPermissions" resultMap="permission">
+        select * from sys_permission
+    </select>
+    <update id="updatePermission" parameterType="Permission">
+        update sys_permission set resource_name=#{resourceName} resource_url=#{resourceUrl}  where resource_id=#{permissionId}
+    </update>
+    <!--删除角色权限关联-->
+    <delete id="deleteRolePermission" parameterType="long">
+        DELETE FROM sys_role_permission WHERE resource_id=#{permissionId}
+    </delete>
+</mapper>
